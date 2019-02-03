@@ -22,7 +22,7 @@ def generate_links(url, all_links):
         # check if link is external
         if parsed_link.host != host and parsed_link.host is not None:
             continue
-        # check if link is has host, port and path
+        # check if link has host, port and path
         elif parsed_link.host is not None:
             if parsed_link.port is None:
                 if parsed_link.path is not None:
