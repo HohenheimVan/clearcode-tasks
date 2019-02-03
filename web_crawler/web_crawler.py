@@ -82,5 +82,5 @@ def site_map(url):
     dictionary = generate_dictionary(url, empty_dict)
     pprint(dictionary)
 
-
-site_map('http://0.0.0.0:8000')
+if __name__ == '__main__':
+    site_map('http://0.0.0.0:8000')
