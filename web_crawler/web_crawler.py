@@ -40,7 +40,7 @@ def generate_dictionary(url, dictionary):
     # connect to url and get html as a string
     connect = requests.get(url)
     html = connect.text
-    all_links = re.findall('<a href="(.*)"', html)  # get all links from <a href> tags
+    all_links = re.findall('<a href="(.*?)"', html)  # get all links from <a href> tags
     title = re.findall('<title>(.*?)<', html)  # get title from <title> tag
     internal_links = generate_links(url, all_links)
     single_url_dict = {url: {'title': title[0], 'links': set(internal_links)}}
@@ -66,6 +66,8 @@ def site_map(url):
     empty_dict = {}
     dictionary = generate_dictionary(url, empty_dict)
     pprint(dictionary)
+    return dictionary
+
 
 if __name__ == '__main__':
-    site_map('http://0.0.0.0:8000')
+    site_map('http://0.0.0.0:8000/')
