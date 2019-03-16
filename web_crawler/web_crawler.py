@@ -2,6 +2,7 @@ import re
 import requests
 from urllib3.util import parse_url
 from pprint import pprint
+from urllib.parse import urljoin
 
 
 def generate_links(url, all_links):
@@ -11,37 +12,20 @@ def generate_links(url, all_links):
     :param all_links: all links from <a href> tags
     :return: internal links
     """
+
     internal_links = []
     parsed_url = parse_url(url)
     host = parsed_url.host
-    port = parsed_url.port
-    scheme = parsed_url.scheme
 
     for link in all_links:
         parsed_link = parse_url(link)
+
         # check if link is external
         if parsed_link.host != host and parsed_link.host is not None:
             continue
-        # check if link has host, port and path
-        elif parsed_link.host is not None:
-            if parsed_link.port is None:
-                if parsed_link.path is not None:
-                    link = f"{scheme}://{host}{parsed_link.path}"
-                else:
-                    link = f"{scheme}://{host}"
-            else:
-                if parsed_link.path is not None:
-                    link = f"{scheme}://{host}:{port}{parsed_link.path}"
-                else:
-                    link = f"{scheme}://{host}:{port}"
-        # if link is just a path
         else:
-            if parsed_url.port is not None:
-                link = f"{scheme}://{host}:{port}{parsed_link.path}"
-            else:
-                link = f"{scheme}://{host}{parsed_link.path}"
-        internal_links.append(link)
-
+            validated_link = urljoin(url, link)
+            internal_links.append(validated_link)
     return internal_links
 
 
@@ -60,9 +44,10 @@ def generate_dictionary(url, dictionary):
     title = re.findall('<title>(.*?)<', html)  # get title from <title> tag
     internal_links = generate_links(url, all_links)
     single_url_dict = {url: {'title': title[0], 'links': set(internal_links)}}
+
     # update main dictionary with single_url_dict items
-    for k, v in single_url_dict.items():
-        dictionary.update({k: v})
+    dictionary.update(single_url_dict)
+
     for link in internal_links:
         # check if link is a key in dict
         try:
